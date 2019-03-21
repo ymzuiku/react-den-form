@@ -6,9 +6,8 @@ interface IGetValuePaths {
   select: Array<String>,
 }
 
-interface IProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface IProps {
   data?: Object;
-  style: React.CSSProperties;
   onChange?: (e:any, data: Object, field: String, value: any, element: React.ReactElement)=> void 0;
 }
 
