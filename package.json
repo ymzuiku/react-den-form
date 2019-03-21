@@ -1,6 +1,6 @@
 {
   "name": "react-den-form",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Easy use Form in React",
   "private": true,
   "scripts": {
@@ -14,15 +14,8 @@
     "lint-ci": "lint-staged",
     "test": "node scripts/test.js"
   },
-  "dll_react": {
-    "react": true
-  },
-  "dll_dom": {
-    "react-dom": true
-  },
   "dependencies": {
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3"
+    "react": "^16.8.3"
   },
   "devDependencies": {
     "@babel/core": "7.1.6",
