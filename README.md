@@ -134,7 +134,7 @@ export default () => {
 
 ## Form 组件嵌套不需要处理
 
-如下结构, userName2 的 input 只会被其父级 Form 捕获, 最外层的 Form 只能捕获 userName 及 password 两个 input
+如下结构, userName2 的 input 只会被其父级 Form 捕获, 最外层的 Form 只会捕获 userName 及 password 两个 input
 
 ```js
 export default () => {
@@ -198,8 +198,10 @@ export default () => {
 import React from 'react';
 import Form from 'packages/react-den-form';
 
+// 例子, 这是一个有表单的页面, 使用类组件进行编写
 class HomePage extends React.Component {
   render() {
+    // 需要使用 toForm 处理返回值
     return this.props.toForm(<div>
       <nav>导航栏</nav>
       <div>
@@ -245,9 +247,7 @@ export default () => {
 }
 ```
 
-但是如果我们自己定义的特殊组件, 它们的onChange的返回值结构不确定, 我们可以编写 onChangeGetter 属性:
-
-> `onChangeGetter` 的默认值相当于 `onChangeGetter={e => e}`
+我们自己定义的特殊组件, 如果它们的onChange的返回值结构不确定, 我们可以编写 onChangeGetter 属性:
 
 ```js
 import React from 'react';
@@ -282,9 +282,12 @@ export default () => {
 
 ```
 
+> `onChangeGetter` 的默认值相当于 `onChangeGetter={e => e}`
+
+
 ## 上下文获取数据
 
-如果我们为 Form 显式注入一个 data, 当数据变化时, data的值也会变化, 这样可以在上下文获取 Form 的数据
+我们为 Form 显式注入一个 data, 当数据变化时, data的值也会变化, 这样可以在上下文获取 Form 的数据
 
 ```js
 // React.Component 版本
