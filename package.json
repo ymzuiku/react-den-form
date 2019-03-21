@@ -1,7 +1,7 @@
 {
   "name": "react-den-form",
   "version": "0.0.1",
-  "description": "React Project GUI",
+  "description": "Easy use Form in React",
   "private": true,
   "scripts": {
     "reload-img": "auto-require-files src/assets index",
