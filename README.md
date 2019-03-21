@@ -1,8 +1,14 @@
-# Form
+# Den Form
 
 > 为什么叫 Den Form ?  可能是因为`丹凤眼`非常迷人吧...  
 
 一个非常简单, 轻巧的 Form 实现, 体积只有 1kb, 可以很方便跨越组件层级获取表单对象, 支持 React, ReactNative
+
+## 安装
+
+```sh
+$ yarn add react-den-form
+```
 
 ## 基础使用
 
