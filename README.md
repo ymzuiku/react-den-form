@@ -1,6 +1,6 @@
 # Den Form
 
-> 为什么叫 Den Form ?  可能是因为`丹凤眼`非常迷人吧...  
+> 为什么叫 Den Form ?  可能是因为 `丹凤眼` 非常迷人吧...  
 
 一个非常简单, 轻巧的 Form 实现, 体积只有 1kb, 可以很方便跨越组件层级获取表单对象, 支持 React, ReactNative
 
@@ -12,7 +12,7 @@ $ yarn add react-den-form
 
 ## 基础使用
 
-Form组件会在有 field 属性的子组件上注入 onChange 事件
+Form组件会在有 field 属性的子组件上注入 onChange 事件, 并获取其中的值
 
 ```js
 import React from 'react';
@@ -28,9 +28,36 @@ export default () => {
   );
 };
 ```
+
 当我们输入数据时, onChange 方法打印如下:
 
 ```
+{userName: "333"}
+```
+
+## 主动传入的 onChange 事件不会受到影响
+
+Form组件会在有 field 属性的子组件上注入 onChange 事件, 并获取其中的值
+
+```js
+import React from 'react';
+import Form from 'react-den-form';
+
+export default () => {
+  return (
+    <div>
+      <Form onChange={(e, data) => console.log(data)}>
+        <input onChange={()=>console.log('self-onChange')} field="userName" />
+      </Form>
+    </div>
+  );
+};
+```
+
+当我们输入数据时, onChange 方法打印如下:
+
+```
+self-onChange
 {userName: "333"}
 ```
 
