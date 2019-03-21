@@ -217,6 +217,7 @@ module.exports = function(webpackEnv) {
         ].filter(Boolean),
     output: {
       ...(isOnlyBuildJS && { library: '[name]' }),
+      ...(shouldBuildLib && { libraryTarget: 'commonjs2' }),
       // The build folder.
       path: shouldBuildDll ? dllDirPath : isEnvProduction ? paths.appBuild : undefined,
       // Add /* filename */ comments to generated require()s in the output.
@@ -319,7 +320,6 @@ module.exports = function(webpackEnv) {
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
       runtimeChunk: isOnlyBuildJS ? false : true,
-
     },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
@@ -340,8 +340,8 @@ module.exports = function(webpackEnv) {
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-        'src': path.resolve(__dirname, '../src'),
-        'packages': path.resolve(__dirname, '../src/packages'),
+        src: path.resolve(__dirname, '../src'),
+        packages: path.resolve(__dirname, '../src/packages'),
       },
       plugins: [
         // Adds support for installing with Plug'n'Play, leading to faster installs and adding
