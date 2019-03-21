@@ -24,7 +24,7 @@ export default () => {
 ```
 当我们输入数据时, onChange 方法打印如下:
 
-```json
+```
 {userName: "333"}
 ```
 
@@ -54,7 +54,7 @@ export default () => {
 
 当我们输入数据时, onChange 方法打印如下:
 
-```json
+```
 {userName: "333", password: "555"}
 ```
 
@@ -95,7 +95,7 @@ export default () => {
 
 当我们输入数据时, onChange 方法打印如下:
 
-```json
+```
 {userName: "333", password: "555", subPassword: "666"}
 ```
 
@@ -295,7 +295,7 @@ export default () => {
 ```
 输入数据, 点击 button, data数据打印如下:
 
-```json
+```
 { userName: "dog" }
 ```
 
