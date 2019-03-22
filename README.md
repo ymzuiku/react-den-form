@@ -2,7 +2,7 @@
 
 > 为什么叫 Den Form ?  可能是因为 `丹凤眼` 非常迷人吧...  
 
-一个非常轻巧的 Form 实现, gzip 体积只有 1.4kb, 可以很方便跨越组件层级获取表单对象, 支持 React, ReactNative
+一个非常轻巧的 Form 实现, gzip 体积只有 2kb, 可以很方便跨越组件层级获取表单对象, 支持 React, ReactNative
 
 ## 安装
 
@@ -46,7 +46,7 @@ import Form from 'react-den-form';
 export default () => {
   return (
     <div>
-      <Form onChange={({data}) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)} onError>
         <input onChange={()=>console.log('self-onChange')} field="userName" />
       </Form>
     </div>

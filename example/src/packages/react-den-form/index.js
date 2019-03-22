@@ -16,7 +16,7 @@ class Form extends React.Component {
   }
 
   handleOnChange = (e, child, childOnChange) => {
-    const { onChange, updateOnChange } = this.props;
+    const { onChange, updateOnChange, onError } = this.props;
     let value = void 0;
 
     // 如果有getter函数, 使用 getter函数获取对象
@@ -71,7 +71,19 @@ class Form extends React.Component {
     const isError = this.errorChecker(child);
 
     // 如果this.errorList历史的错误和当前校验的不一致, 更新form组件
-    if (this.errorList[child.props.field] !== isError || updateOnChange) {
+    if (this.errorList[child.props.field] !== isError) {
+      if (typeof onError === 'function') {
+        onError({
+          event: e,
+          data: this.data,
+          field: child.props.field,
+          value,
+          update: this.forceUpdate,
+          element: child,
+        });
+      }
+      this.forceUpdate();
+    } else if (updateOnChange) {
       this.forceUpdate();
     }
 
