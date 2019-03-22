@@ -261,7 +261,6 @@ class SubInput extends React.Component {
 
   handleOnChange = e => {
     this.inputData.value = e.target.value;
-    const { onChange } = this.props;
     this.props.onChange(this.inputData);
   };
 
