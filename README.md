@@ -21,7 +21,7 @@ import Form from "react-den-form";
 export default () => {
   return (
     <div>
-      <Form onChange={({ data }) => console.log(data)}>
+      <Form onSubmit={({ data }) => console.log(data)}>
         <input field="userName" />
       </Form>
     </div>
@@ -29,7 +29,7 @@ export default () => {
 };
 ```
 
-当我们输入数据时, onChange 方法打印如下:
+当我们输入数据后, 按回车键, onSubmit 方法打印如下:
 
 ```
 {userName: "333"}
@@ -134,18 +134,20 @@ export default () => {
 
 ## Form 组件嵌套不需要处理
 
-如下结构, userName2 的 input 只会被其父级 Form 捕获, 最外层的 Form 只会捕获 userName 及 password 两个 input
+由于 Form 内部有一个 form 标签, 外层 onSubmit 会捕获所有子组件的 onSubmit 事件, 但是 data 数据只会捕获 当前层级内的 field 对象
 
 ```js
 export default () => {
   return (
     <div>
-      <Form onChange={({ data }) => console.log("1", data)}>
+      {/* 此 Form 只会捕获 userName及password, age及vipLevel被子Form拦截了 */}
+      <Form onSubmit={({ data }) => console.log("1", data)}>
         <input field="userName" />
         <input field="password" />
-        <Form onChange={({ data }) => console.log("2", data)}>
-          <input field="userName2" />
-          <input field="password2" />
+        {/* 此 Form 只会捕获 age及vipLevel */}
+        <Form onSubmit={({ data }) => console.log("2", data)}>
+          <input field="age" />
+          <button type="submit">此Submit会被最近的父级捕获</button>
         </Form>
       </Form>
     </div>
@@ -189,7 +191,7 @@ export default () => {
 
 ## 类组件的嵌套需要使用 toForm 进行处理
 
-被 Form 组件包裹过的组件的 props 都会有一个 toForm 的函数
+被 Form 组件包裹过的类组件的 props 都会有一个 toForm 的函数
 
 类组件不同于函数组件, 需要使用 toForm 对其内部的 render 返回值进行处理, 才可以识别其内部有 field 属性的对象, 将其划分在 Form 组件的监管范围内:
 
@@ -282,6 +284,61 @@ export default () => {
 ```
 
 > `onChangeGetter` 的默认值相当于 `onChangeGetter={e => e}`
+
+## 表单提交
+
+以下三个情形为都会触发 Form 的 onSubmit 函数:
+
+- 包含 field 属性的对象中, 使用键盘的回车键
+- 包含 submit 属性, 点击(onClick)
+- 包含 type="submit" 属性的对象中, 点击(onClick)
+
+```js
+import React from "react";
+import Form from "react-den-form";
+
+export default () => {
+  return (
+    <div>
+      <Form onSubmit={({ data }) => console.log(data)}>
+        <input field="userName" />
+        <input submit field="password" />
+        <button type="submit" />
+      </Form>
+    </div>
+  );
+};
+```
+
+## fetch 提交
+
+Form 表单内部并无封装请求行为, 请在 onSubmit 事件中自行处理, 如:
+
+```js
+import React from "react";
+import Form from "react-den-form";
+
+function fetchLogin({ data }) {
+  fetch("/api/login", { method: "post", body: JSON.stringify(data) })
+    .then(res => {
+      return res.json();
+    })
+    .then(data => {
+      console.log(data);
+    });
+}
+
+export default () => {
+  return (
+    <div>
+      <Form onSubmit={fetchLogin}>
+        <input field="userName" />
+        <input field="password" />
+      </Form>
+    </div>
+  );
+};
+```
 
 ## 上下文获取数据
 
@@ -396,9 +453,8 @@ Warning: React does not recognize the `errorCheck` prop on a DOM element. If you
 Form 提供了一个 onErrorCheck 的属性, 满足以上需求
 
 ```js
-import "./App.css";
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 export default () => {
   return (
@@ -416,14 +472,48 @@ export default () => {
 };
 ```
 
-## fetch 提交
+## 联动
 
-数据的提交在项目中应该是统一的, 如果表单的提交和其他行为的数据提交方式不一致, 就会导致项目数据交互的方式分裂了, 对项目长期的维护不利.
+当我们修改一个对象时, 根据某些条件, 希望修改另一个对象的行为我们偶尔会遇到, 这一个需求也是一个 Form 组件的最后一个需求
 
-数据的提交最好在统一的地方进行提交及处理, 所以此表单库不会对 fetch 进行封装, 请根据 `上下文获取数据` 的方式, 自行处理提交
+以下是一个联动的使用方式:
 
-fetch 之后的结果校验, 请使用结果在 errorcheck 属性中自行校验
+```js
+```
+
+## 性能开销
+
+Form 存在的意义在于简化开发, 用计算机的时间换取开发者的时间, 所以会有一些性能开销, 但是它的开销绝对不大.
+
+以下两个行为会有性能的开销
+
+1. Form 组件会去查询当前 JSX 对象中的所有子组件是否包含 field 或者 submit 属性, 如果包含, 则注入 onChange 或 onClick
+2. 如果某个组件包含 errorcheck 属性, 当 errorcheck 校验结果和上一次不一致时, 会更新整个 Form 对象
+
+第一条检索行为, 在 PC 端大概每 100 个 input 会多 20ms 的消耗
+第二条更新行为, 因 Form 的子组件个数而异
+
+如果因为使用 Form 遇到了性能问题, 请检查以下情况:
+
+- 请减少 Form 内部子组件的个数, 最好不要超过 100 个
+- 请不要将 Form 包裹在整个 App 的最外层, 这条原因和上条一致
+- 在一个无限长的滚动列表外包裹 Form 时, 请尽量使用 react-virtualized 或 react-window 类型的虚拟 List 组件, 以减少 Form 包裹的内容个数
+
+> 我们有理由相信, 在一个设计合理的应用中, 每个 Form 包裹的组件个数应该是有限的
 
 ## 支持哪些 React 渲染层 ?
 
-仅支持 ReactDOM, 此库不支持其他渲染层, 如 ReactNative, ReactVR
+此库支持所有 React 的渲染层, 如 ReactDOM, ReactNative, ReactVR, 但是非 ReactDOM 中, 需要初始化事件类型
+
+如 ReactNative 中, 在项目之初设定:
+
+```js
+import { immitProps } from "react-den-form";
+
+// 设定 ReactNative 中的输入事件
+immitProps.change = "onChange";
+// 设定 ReactNative 中的点击事件
+immitProps.click = "onPress";
+```
+
+之后的使用和渲染层无关

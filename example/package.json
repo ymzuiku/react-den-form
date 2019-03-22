@@ -1,6 +1,6 @@
 {
   "name": "react-den-form",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Easy use Form in React",
   "private": true,
   "scripts": {
