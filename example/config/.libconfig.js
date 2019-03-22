@@ -10,6 +10,9 @@ module.exports = {
   package: {
     "main": "lib/index.js",
     "types": "src/index.d.ts",
+    "dependencies": {
+      "react": "^16.8.4"
+    },
   },
   gitURL: 'github.com/ymzuiku/react-den-form',
 };
