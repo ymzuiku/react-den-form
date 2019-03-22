@@ -21,7 +21,7 @@ import Form from 'react-den-form';
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         <input field="userName" />
       </Form>
     </div>
@@ -46,7 +46,7 @@ import Form from 'react-den-form';
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         <input onChange={()=>console.log('self-onChange')} field="userName" />
       </Form>
     </div>
@@ -70,7 +70,7 @@ import Form from 'packages/react-den-form';
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         <div>
           <div>
             <div>
@@ -110,7 +110,7 @@ function SubInput() {
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         <div>
           <div>
             <div>
@@ -140,10 +140,10 @@ export default () => {
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log('1', data)}>
+      <Form onChange={({data}) => console.log('1', data)}>
         <input field="userName" />
         <input field="password" />
-         <Form onChange={(e, data) => console.log('2', data)}>
+         <Form onChange={({data}) => console.log('2', data)}>
           <input field="userName2" />
           <input field="password2" />
           </Form>
@@ -178,7 +178,7 @@ class SubInput extends React.Component {
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         {/* 需要设置 field 属性 */}
         <SubInput field="userName" />
       </Form>
@@ -215,7 +215,7 @@ class HomePage extends React.Component {
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         <SubInput />
       </Form>
     </div>
@@ -272,7 +272,7 @@ class SubInput extends React.Component {
 export default () => {
   return (
     <div>
-      <Form onChange={(e, data) => console.log(data)}>
+      <Form onChange={({data}) => console.log(data)}>
         <SubInput field="userName" onChangeGetter={e => e.value} />
       </Form>
     </div>
@@ -333,6 +333,65 @@ export default () => {
 ```
 { userName: "dog" }
 ```
+## 表单校验
+
+表单校验是无痛的, 并且是高效的
+
+我们给 input 组件添加 errorcheck 属性, 该属性可以是一个正则对象, 也可以是一个函数, 如果 errorcheck 校验的结果为 `false`, 就会将其他 error 相关的属性赋予至组件中
+
+如下代码, 如果 input 内容不包含 `123`, 字体颜色为红色:
+
+```js
+import './App.css';
+import React from 'react';
+import Form from 'packages/react-den-form';
+
+export default () => {
+  return (
+    <div>
+      <Form>
+        <input field="userName" errorcheck={/123/} errorstyle={{ color: '#f00' }}/>
+      </Form>
+    </div>
+  );
+};
+
+```
+
+### 表单校验相关的 api: 
+
+| prop | 类型 | 用途 |
+| --- | --- | --- |
+| errorcheck | 正则或函数 | 若返回值为 false, 将其他 error Api应用至组件中 |
+| errorstyle | style 对象 | 若校验为错误, 将 errorstyle 合并至 style 中 |
+| errorclass | className 字符串 | 若校验为错误, 将 errorstyle 合并至 className 中 |
+| errorprops | props 对象 | 若校验为错误, 将 errorprops 合并至整个 props 中 |
+
+为什么是 errorcheck 而不是 errorCheck ? 这是因为 React 对 DOM 元素属性的定义为 lowercass:
+
+```
+Warning: React does not recognize the `errorCheck` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `errorcheck` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+```
+
+### 表单校验的更新方式
+
+为了更好地性能, 并不会在每次输入更 Form 组件, 而是在当校验结果和上一次不一致时更新 Form 组件
+
+如当以上代码:
+
+ - 输入 `12` 不会更新组件
+ - 当输入值为 `123` 时, 更新组件
+ - 当输入值为 `1234`时, 不会更新组件
+ - 当输入值改为 `234` 时, 更新组件
+
+
+## fetch 提交
+
+数据的提交在项目中应该是统一的, 如果表单的提交和其他行为的数据提交方式不一致, 就会导致项目数据交互的方式分裂了, 对项目长期的维护不利.
+
+数据的提交最好在统一的地方进行提交及处理, 所以此表单库不会对 fetch 进行封装, 请根据 `上下文获取数据` 的方式, 自行处理提交
+
+fetch 之后的结果校验, 请使用结果在 errorcheck 属性中自行校验
 
 ## 支持哪些 React渲染层 ?
 
