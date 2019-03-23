@@ -20,6 +20,7 @@ class Form extends React.Component {
     this.editChild = void 0;
     this.editIsError = false;
     this.errorList = {};
+    this.refsList = {};
   }
 
   componentWillUnmount() {
