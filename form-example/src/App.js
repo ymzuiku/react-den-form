@@ -18,9 +18,8 @@ export default () => {
       {/* 此 Form 只会捕获 userName及password, age及vipLevel被子Form拦截了 */}
       <Form
         data={data}
-        onChange={({ data: theData, update }) => {
-          theData.password = 'aaa';
-          update(theData);
+        onChange={({ update }) => {
+          update({ password: { value: 'aaaaa' } });
         }}
         onSubmit={({ data }) => console.log('1', data)}
       >

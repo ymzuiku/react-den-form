@@ -29,8 +29,6 @@ interface IOnChangeParams {
 }
 
 interface IProps {
-  /** 每次输入都强制更新Form的子组件 */
-  updateOnChange: Boolean;
   /** 显式设定form.data */
   data?: Object;
   /** form监管的组件onChange时的统一回调 */
