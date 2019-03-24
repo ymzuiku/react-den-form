@@ -2,7 +2,7 @@
 
 > 为什么叫 Den Form ? 可能是因为 `丹凤眼` 非常迷人吧...
 
-一个非常轻巧的 Form 实现, gzip 体积只有 2kb, 可以很方便跨越组件层级获取表单对象
+一个非常轻巧的 Form 实现, gzip 体积只有 3kb, 可以很方便跨越组件层级获取表单对象
 
 ## 安装
 
@@ -14,7 +14,7 @@ $ yarn add react-den-form
 
 Form 组件会在有 field 属性的子组件上注入 onChange 事件, 并获取其中的值
 
-field 属性是 Form 组件用于标记哪一类子组件需要被监管的字段, 并且也是用于校验更新的key
+field 属性是 Form 组件用于标记哪一类子组件需要被监管的字段, 并且也是用于校验更新的 key
 
 field 可以重复, 但是如果两个子组件拥有相同的 field 值, 那么当此类 field 需要更新时, 两个子组件都会进行更新
 
@@ -437,17 +437,6 @@ export default () => {
 Warning: React does not recognize the `errorCheck` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `errorcheck` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
 ```
 
-## 表单校验的更新方式
-
-为了更好地性能, 并不会在每次输入更新组件, 而是在当校验结果和上一次不一致时更新组件, 并且只更新当前编辑的子组件
-
-如当以上代码:
-
-- 输入 `12` **不会**更新当前编辑的子组件
-- 当输入值为 `123` 时, 更新当前编辑的子组件
-- 当输入值为 `1234`时, **不会**更新当前编辑的子组件
-- 当输入值改为 `234` 时, 更更新当前编辑的子组件
-
 ## 表单校验时进行特殊处理
 
 如果我们有一个需求, 当表单校验错误时, 显示一个提示信息, 当表单校验通过时, 取消提示信息, 我们就需要对每次校验有差异时, 进行处理
@@ -480,28 +469,54 @@ export default () => {
 
 当我们修改一个对象时, 根据某些条件, 希望修改另一个对象的行为我们偶尔会遇到, 这一个需求也是一个 Form 组件的最后一个需求
 
-以下是一个联动的使用方式:
+我们可以在任何 Form 的回调函数中使用 update 进行更新某个被 field 捆绑的组件的 value 或者 props
+
+下面这个例子: 1. 当在 password 输入时, 会将 userName 的 input 框内容改为 'new value'; 2. 当 userName 的 input 的内容包含 'aa' 时, 会将 password 的 value 和 style 进行修改;
 
 ```js
+import React from "react";
+import Form from "packages/react-den-form";
+
+export default () => {
+  return (
+    <div>
+      <Form
+        onChange={({ data, field, update }) => {
+          if (field === "password") {
+            update({ userName: "new value" });
+          }
+          if (/aa/.test(data.userName)) {
+            update({
+              password: {
+                value: "new value and style",
+                style: { fontSize: 30 }
+              }
+            });
+          }
+        }}
+      >
+        <input field="userName" />
+        <input field="password" />
+      </Form>
+    </div>
+  );
+};
 ```
 
 ## 性能开销
 
-Form 存在的意义在于简化开发, 用计算机的时间换取开发者的时间, 所以会有一些性能开销, 但是它的开销绝对不大.
+Form 存在的意义在于简化开发, 用计算机的时间换取开发者的时间, 所以会有一些性能开销.
 
-以下两个行为会有性能的开销
+但是 Form 的开销绝对不大, 因为 Form 内部更新时只会针对指定的子组件进行更新.
 
-1. Form 组件会去查询当前 JSX 对象中的所有子组件是否包含 field 或者 submit 属性, 如果包含, 则注入 onChange 或 onClick
-2. 如果某个组件包含 errorcheck 属性, 当 errorcheck 校验结果和上一次不一致时, 会更新当前编辑的子组件
-
-第一条检索行为, 在 PC 端大概每 100 个 input 会多 20ms 的消耗
-第二条更新行为, 因 Form 的子组件个数而异
+1. 每个包含 field 属性的子组件都相当于一个受控组件, 当子组件 onChange 时, 此子组件会进行更新
+2. Form 组件声明或被外部更新时会去查询当前 JSX 对象中的所有子组件是否包含 field 或者 submit 属性, 如果包含, 则注入 onChange 或 onClick; 如果不希望 Form 被外部更新, 请声明 `<Form shouldUpdate={false} >{...}</Form>`
 
 如果因为使用 Form 遇到了性能问题, 请检查以下情况:
 
 - 请减少 Form 内部子组件的个数, 最好不要超过 100 个
-- 请不要将 Form 包裹在整个 App 的最外层, 这条原因和上条一致
 - 在一个无限长的滚动列表外包裹 Form 时, 请尽量使用 react-virtualized 或 react-window 类型的虚拟 List 组件, 以减少 Form 包裹的内容个数
+- 如果 Form 子组件的个数过多时, 请确保 Form 组件不会由外部频繁更新, 或者添加 shouldUpdate={false} 至 Form 中: `<Form shouldUpdate={false} >{...}</Form>`
 
 > 我们有理由相信, 在一个设计合理的应用中, 每个 Form 包裹的组件个数应该是有限的
 
@@ -514,10 +529,63 @@ Form 存在的意义在于简化开发, 用计算机的时间换取开发者的�
 ```js
 import { immitProps } from "react-den-form";
 
-// 设定 ReactNative 中的输入事件
+// 设定 ReactNative 中的读取值和更新值的监听属性:
+immitProps.value = "value";
 immitProps.change = "onChange";
-// 设定 ReactNative 中的点击事件
 immitProps.click = "onPress";
 ```
 
-之后的使用和渲染层无关
+## API
+
+### Form API
+
+| 属性         | 描述                                                                      | 类型                      | 默认值    | 必填 |
+| ------------ | ------------------------------------------------------------------------- | ------------------------- | --------- | ---- |
+| data         | 用于捆绑上下文的 data 对象, 也会当成默认值设置到相应的 field 监管的组件中 | Object: {<field>:<value>} | {}        | --   |
+| onChange     | 当有 field 监管的子组件执行 onChange 时, 进行回调                         | (IEvents) => void         | undefined | --   |
+| onSubmit     | 当有表单进行提交时, 进行回调                                              | (IEvents) => void         | undefined | --   |
+| onErrorCheck | 当有 field 监管的子组件的错误校验结果发生变化时, 进行回调                 | (IEvents) => void         | undefined | --   |
+
+### IEvents API (回调函数的参数)
+
+Form 组件回调函数的参数如下: ({isError, event, data, field, value, element, update }) => void
+
+具体的 API 描述如下:
+
+| 属性    | 描述                                    | 类型                          | 默认值                        | 必传             |
+| ------- | --------------------------------------- | ----------------------------- | ----------------------------- | ---------------- |
+| isError | 最后输入的对象校验是否正确              | Boolean                       | false                         | true             |
+| event   | onChange 的原始返回对象                 | Boolean                       | undefined                     | false            |
+| data    | form.data 对象, 包含所有 field 监管的值 | Object: {<field>:<value>}     | {}                            | true             |
+| field   | 当前修改的组件的 field 属性             | String                        | undefined                     | true             |
+| value   | 当前修改的值                            | Boolean                       | ''                            | String or Number |
+| element | 当前修改的 ReactElement                 | Boolean                       | React.Element                 | true             |
+| update  | 更新某个 field 监管的对象               | (IEvents)=> {<field>:<value>} | (IEvents)=> {<field>:<value>} | true             |
+
+### 子组件关联参数
+
+一个子组件可以被识别关联的参数如下
+
+```js
+<input
+  field="userName"
+  submit
+  type="submit"
+  errorcheck={/123/}
+  errorstyle={{ color: "#f00" }}
+  errorclass="input-error-style"
+  errorprops={{ disable: true }}
+/>
+```
+
+具体的 API 描述如下:
+
+| 属性       | 描述                                                             | 类型                      | 默认值    | 必传 |
+| ---------- | ---------------------------------------------------------------- | ------------------------- | --------- | ---- |
+| field      | 用于标记组件是否被 Form 组件监听, 并且也是 data 用于存放值的 key | String                    | undefined |      | -- |
+| submit     | 用于确定当前对象是否可以响应 onClick 事件进行提交                | Boolean                   | undefined | --   |
+| type       | 当 type = "submit" 时, 可以响应 onClick 事件进行提交             | Object: {<field>:<value>} | undefined | --   |
+| errorcheck | 用于校验当前对象 value 是否错误                                  | 正则对象或函数            | undefined | --   |
+| errorstyle | 当前对象 value 错误时, 合并 errorstyle 至 style                  | Object                    | undefined | --   |
+| errorclass | 当前对象 value 错误时, 合并 errorclass 至 className              | String                    | undefined | --   |
+| errorprops | 当前对象 value 错误时, 合并 errorprops 至 props                  | Object                    | undefined | --   |

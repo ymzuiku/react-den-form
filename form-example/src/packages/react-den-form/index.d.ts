@@ -18,13 +18,13 @@ interface IOnChangeParams {
   event:any;
   /** 整个form.data */
   data: Object;
-  /** 当前修改的field */
+  /** 当前修改的组件的 field 属性 */
   field: String;
   /** 当前修改的值 */
   value: any;
   /** 当前修改的 ReactElement */
   element: React.ReactElement;
-  /** 强制更新整个Form内容 */
+  /** 更新某个field监管的对象 */
   update: Function;
 }
 
