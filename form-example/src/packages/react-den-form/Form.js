@@ -42,10 +42,13 @@ class Form extends React.Component {
     return isError;
   };
 
-  updateByData = (updateObj = { [this.editChild.field]: this.data[this.editChild.field] }) => {
+  updateByData = (updateObj = { [this.editChild.field]: { val: this.data[this.editChild.field] } }) => {
     for (const field in updateObj) {
       if (this.refList[field] && this.refList[field].length > 0) {
         this.refList[field].forEach(ref => {
+          if (updateObj[field].val !== void 0) {
+            this.data[field] = updateObj[field].val;
+          }
           if (ref.current) {
             let node;
             if (ref.current._default) {
@@ -53,8 +56,7 @@ class Form extends React.Component {
             } else {
               node = ref.current;
             }
-            node.setTempProps(updateObj[field]);
-            node.forceUpdate();
+            node.updateFromProps(updateObj[field]);
           }
         });
       }
@@ -62,13 +64,7 @@ class Form extends React.Component {
   };
 
   fixUpdateProps = (child, props) => {
-    console.log(props);
-    if (props && props[immitProps.value]) {
-      this.data[child.props.field] = props[immitProps.value];
-    }
-
     const isError = this.errorChecker(child);
-    this.errorList[child.props.field] = isError;
 
     if (isError) {
       return {
@@ -99,7 +95,6 @@ class Form extends React.Component {
     }
 
     const isError = this.errorChecker(child);
-    this.errorList[child.props.field] = isError;
 
     if (typeof onSubmit === 'function') {
       onSubmit({
@@ -166,6 +161,8 @@ class Form extends React.Component {
 
     // 如果this.errorList历史的错误和当前校验的不一致, 更新form组件
     if (this.errorList[child.props.field] !== isError) {
+      // 更新旧的错误记录
+      this.errorList[child.props.field] = isError;
       if (typeof onErrorCheck === 'function') {
         onErrorCheck(callbackParams);
       }
@@ -183,9 +180,6 @@ class Form extends React.Component {
       e.target.addEventListener('keydown', keydownListen);
       e.target.keydownListen = keydownListen;
     }
-
-    // 更新旧的错误记录
-    this.errorList[child.props.field] = isError;
   };
 
   getChild = children => {
@@ -199,7 +193,7 @@ class Form extends React.Component {
       if (child.props && (child.props.type === 'submit' || child.props.submit)) {
         // 如果包含submit并且也包含field属性
         if (child.props.field) {
-          if (this.refList[child.props.field] === void 0) {
+          if (!this.refList[child.props.field]) {
             this.refList[child.props.field] = [];
           }
 
@@ -209,7 +203,6 @@ class Form extends React.Component {
 
           const props = {
             ref,
-            key: child.props.field + this.refList[child.props.field].length,
             fixErrorProps: this.fixUpdateProps,
             [immitProps.value]: this.data[child.props.field] || child.props[immitProps.value],
             [immitProps.change]: e => this.handleOnChange(e, child, child.props.onChange),
@@ -225,7 +218,7 @@ class Form extends React.Component {
         });
       }
       if (child.props && child.props.field) {
-        if (this.refList[child.props.field] === void 0) {
+        if (!this.refList[child.props.field]) {
           this.refList[child.props.field] = [];
         }
 
@@ -235,7 +228,6 @@ class Form extends React.Component {
 
         const props = {
           ref,
-          key: child.props.field + this.refList[child.props.field].length,
           fixErrorProps: this.fixUpdateProps,
           [immitProps.value]: this.data[child.props.field] || child.props[immitProps.value],
           [immitProps.change]: e => this.handleOnChange(e, child, child.props.onChange),
@@ -255,7 +247,9 @@ class Form extends React.Component {
 
     const { children } = this.props;
 
-    return this.getChild(children);
+    const node = this.getChild(children);
+    console.log(node);
+    return node;
   }
 }
 

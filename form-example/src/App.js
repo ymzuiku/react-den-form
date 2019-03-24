@@ -18,8 +18,10 @@ export default () => {
       {/* 此 Form 只会捕获 userName及password, age及vipLevel被子Form拦截了 */}
       <Form
         data={data}
-        onChange={({ update }) => {
-          update({ password: { value: 'aaaaa' } });
+        onChange={({ data, update }) => {
+          if (/22/.test(data.userName)) {
+            update({ password: { val: 'aaaaa' } });
+          }
         }}
         onSubmit={({ data }) => console.log('1', data)}
       >
@@ -32,7 +34,7 @@ export default () => {
           errorstyle={{ color: '#f00' }}
         />
         {range(100).map((v, i) => {
-          return <input field={'list' + i} errorcheck={/cc/} errorstyle={{ color: '#f00' }} />;
+          return <input key={i} field={'list' + i} errorcheck={/cc/} errorstyle={{ color: '#f00' }} />;
         })}
         {/* 此 Form 只会捕获 age及vipLevel */}
         <Form onSubmit={({ data }) => console.log('2', data)}>
