@@ -2,12 +2,12 @@
 
 > 为什么叫 Den Form ? 可能是因为 `丹凤眼` 非常迷人吧...
 
-一个非常轻巧的 Form 实现, gzip 体积只有 3kb, 可以很方便跨越组件层级获取表单对象
+一个非常轻巧的 Form 实现, gzip 体积只有 3kb, 可以很方便跨越组件层级获取表单对象, 或者管理联动更新
 
 ## 安装
 
 ```sh
-$ yarn add react-den-form
+$ yarn add react-den-form 
 ```
 
 ## 基础使用
@@ -467,7 +467,7 @@ export default () => {
 
 ## 联动
 
-当我们修改一个对象时, 根据某些条件, 希望修改另一个对象的行为我们偶尔会遇到, 这一个需求也是一个 Form 组件的最后一个需求
+当我们修改一个对象时, 根据某些条件, 希望修改另一个对象的行为我们称之为联动
 
 我们可以在任何 Form 的回调函数中使用 update 进行更新某个被 field 捆绑的组件的 value 或者 props
 
@@ -589,3 +589,5 @@ Form 组件回调函数的参数如下: ({isError, event, data, field, value, el
 | errorstyle | 当前对象 value 错误时, 合并 errorstyle 至 style                  | Object                    | undefined | --   |
 | errorclass | 当前对象 value 错误时, 合并 errorclass 至 className              | String                    | undefined | --   |
 | errorprops | 当前对象 value 错误时, 合并 errorprops 至 props                  | Object                    | undefined | --   |
+
+

@@ -29,6 +29,7 @@ class Form extends React.Component {
     this.editChild = null;
     this.errorList = null;
     this.editIsError = null;
+    this.refList = {};
   }
 
   errorChecker = child => {
