@@ -314,7 +314,22 @@ module.exports = function(webpackEnv) {
       ...(!isOnlyBuildJS && {
         splitChunks: {
           chunks: 'all',
-          name: false,
+          minChunks: 2,
+          name: isEnvDevelopment ? 'commons' : false,
+          cacheGroups: {
+            vendor_germa_pc: {
+              test: /germa-pc/,
+              name: 'vendor_germa_pc',
+            },
+            vendor_common: {
+              test: /lvt_common/,
+              name: 'vendor_lvt_common',
+            },
+            vendor_lvt_components: {
+              test: /lvt_components/,
+              name: 'vendor_components',
+            },
+          },
         },
       }),
       // Keep the runtime chunk separated to enable long term caching

@@ -4,13 +4,13 @@
 
 一个非常轻巧的 Form 实现, gzip 体积只有 3kb, 可以很方便跨越组件层级获取表单对象, 或者管理联动更新
 
-## 安装
+## :egg: 安装
 
 ```sh
 $ yarn add react-den-form 
 ```
 
-## 基础使用
+## :fire: 基础使用
 
 Form 组件会在有 field 属性的子组件上注入 onChange 事件, 并获取其中的值
 
@@ -69,7 +69,7 @@ self-onChange
 
 ```js
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 export default () => {
   return (
@@ -99,7 +99,7 @@ export default () => {
 
 ```js
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 function SubInput() {
   return (
@@ -168,7 +168,7 @@ export default () => {
 
 ```js
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 class SubInput extends React.Component {
   handleOnChange = e => {
@@ -201,7 +201,7 @@ export default () => {
 
 ```js
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 // 例子, 这是一个有表单的页面, 使用类组件进行编写
 class HomePage extends React.Component {
@@ -223,7 +223,7 @@ export default () => {
   return (
     <div>
       <Form onChange={({ data }) => console.log(data)}>
-        <SubInput />
+        <HomePage />
       </Form>
     </div>
   );
@@ -258,7 +258,7 @@ export default () => {
 
 ```js
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 class SubInput extends React.Component {
   // 假定数据有一定的层级
@@ -405,7 +405,7 @@ export default () => {
 ```js
 import "./App.css";
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 export default () => {
   return (
@@ -475,7 +475,7 @@ export default () => {
 
 ```js
 import React from "react";
-import Form from "packages/react-den-form";
+import Form from "react-den-form";
 
 export default () => {
   return (
@@ -503,7 +503,7 @@ export default () => {
 };
 ```
 
-## 性能开销
+## :rocket: 性能开销
 
 Form 存在的意义在于简化开发, 用计算机的时间换取开发者的时间, 所以会有一些性能开销.
 
@@ -535,7 +535,7 @@ immitProps.change = "onChange";
 immitProps.click = "onPress";
 ```
 
-## API
+## :see_no_evil: API
 
 ### Form API
 
