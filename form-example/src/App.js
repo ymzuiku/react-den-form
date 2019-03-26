@@ -2,11 +2,15 @@ import './App.css';
 import React from 'react';
 import Form from 'packages/react-den-form';
 
+function TestInput(props) {
+  console.log(props);
+  return <input field="field" />;
+}
 
 export default () => {
   return (
     <div>
-      <Form      
+      <Form
         onChange={({ data, field, update }) => {
           if (field === 'password') {
             update({ userName: '被password的输入修改了值' });
@@ -23,6 +27,7 @@ export default () => {
       >
         <input field="userName" />
         <input field="password" />
+        <TestInput dog={20} />
       </Form>
     </div>
   );

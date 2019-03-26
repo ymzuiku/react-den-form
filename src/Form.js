@@ -247,7 +247,7 @@ class Form extends React.Component {
       if (child.props && child.props.children) {
         return React.cloneElement(child, {}, [this.getChild(child.props.children)]);
       }
-      return child;
+      return React.cloneElement(child, {});
     });
   };
 

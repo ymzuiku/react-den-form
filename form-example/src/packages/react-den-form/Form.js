@@ -197,7 +197,7 @@ class Form extends React.Component {
         if (child.type.prototype.render) {
           return React.cloneElement(child, { toForm: this.getChild, ...this.fixUpdateProps(child) });
         }
-        return this.getChild(child.type());
+        return this.getChild(child.type(child.props));
       }
       if (child.props && (child.props.type === 'submit' || child.props.submit)) {
         // 如果包含submit并且也包含field属性
@@ -247,6 +247,7 @@ class Form extends React.Component {
       if (child.props && child.props.children) {
         return React.cloneElement(child, {}, [this.getChild(child.props.children)]);
       }
+
       return child;
     });
   };
