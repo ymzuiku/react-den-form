@@ -18,7 +18,6 @@ export default class extends React.PureComponent {
     });
 
     this.tempProps = void 0;
-    console.log(node);
     return node;
   }
 }
