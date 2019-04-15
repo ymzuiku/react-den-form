@@ -193,6 +193,9 @@ class Form extends React.Component {
 
   getChild = children => {
     return React.Children.map(children, child => {
+      if (!child) {
+        return null;
+      }
       if (typeof child.type === 'function' && !child.type.isForm) {
         if (child.type.prototype.render) {
           return React.cloneElement(child, { toForm: this.getChild, ...this.fixUpdateProps(child) });

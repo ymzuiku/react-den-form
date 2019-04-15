@@ -1,6 +1,6 @@
 {
   "name": "react-den-form",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Easy use Form in React",
   "dependencies": {},
   "main": "lib/index.js",

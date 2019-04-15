@@ -26,7 +26,7 @@ export default () => {
         }}
       >
         <input field="userName" />
-        <input field="password" />
+        {false && <input field="password" />}
         <TestInput dog={20} />
       </Form>
     </div>
