@@ -3,11 +3,11 @@ module.exports = {
   dontLib: [], // dont babel files or dirs
   copy: {
     'src/packages/react-den-form': '../src',
-    'src/packages/react-den-form/README.md': '../src/README.md',
+    'src/packages/react-den-form/README.md': '../README.md',
     dist: '../lib',
     'dist/package.json': '../package.json',
   },
-  delete: ['dist', '../lib/package.json'], // after copy builded, delete files
+  delete: ['dist', '../lib/package.json', '../src/README.md'], // after copy builded, delete files
   package: {
     main: 'lib/index.js',
     types: 'src/index.d.ts',
