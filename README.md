@@ -39,33 +39,7 @@ export default () => {
 {userName: "333"}
 ```
 
-## 主动传入的 onChange 事件不会受到影响
-
-Form 组件会在有 field 属性的子组件上注入 onChange 事件, 并获取其中的值
-
-```js
-import React from "react";
-import Form from "react-den-form";
-
-export default () => {
-  return (
-    <div>
-      <Form onChange={({ data }) => console.log(data)} onError>
-        <input onChange={() => console.log("self-onChange")} field="userName" />
-      </Form>
-    </div>
-  );
-};
-```
-
-当我们输入数据时, onChange 方法打印如下:
-
-```
-self-onChange
-{userName: "333"}
-```
-
-## 多层级获取数据不需要进行额外处理
+## :tada: 层级获取数据不需要进行额外处理
 
 ```js
 import React from "react";
@@ -95,16 +69,43 @@ export default () => {
 {userName: "333", password: "555"}
 ```
 
-## 跨组件的值获取
+## :bug: Form 表单嵌套不需要处理
 
-1. 可以为组件标记一个 toform 属性
-2. 然后使用 toform 属性在组件内部对表单进行概括
+有时候, 我们会有一些页面结构让两个不同的表单进行嵌套, 如登录时, 验证码的输入框在用户名和密码中间, 而验证码有单独的请求.
+当然, 我们可以更换实现方式, 但是对于这类场景, DenForm 默认处理了表单嵌套.
+
+由于 Form 内部有一个 form 标签, 外层 onSubmit 会捕获所有子组件的 onSubmit 事件, 但是 data 数据只会捕获 当前层级内的 field 对象
+
+```js
+export default () => {
+  return (
+    <div>
+      {/* 此 Form 只会捕获 userName及password, code被子Form拦截了 */}
+      <Form onSubmit={({ data }) => console.log("1", data)}>
+        <input field="userName" />
+        {/* 此 Form 只会捕获 age */}
+        <Form onSubmit={({ data }) => console.log("2", data)}>
+          <input field="code" />
+          <button type="submit">此Submit会被最近的父级捕获</button>
+        </Form>
+        <input field="password" />
+      </Form>
+    </div>
+  );
+};
+```
+
+
+## :sparkles: 跨组件的值获取
+
+1. 为对象标记一个 toform 属性, 会为对象注入一个 ToForm 组件
+2. 然后使用 ToForm 组件在对象内部对表单进行概括
 
 ```js
 import React from "react";
 import Form from "react-den-form";
 
-// 组件会被注入 ToForm 组件
+// 此对象会被注入 ToForm 组件
 function SubInput({ ToForm }) {
   return (
     <div>
@@ -142,33 +143,8 @@ export default () => {
 {userName: "333", password: "555", subPassword: "666"}
 ```
 
-## Form 表单嵌套不需要处理
 
-有时候, 我们会有一些页面结构让两个不同的表单进行嵌套, 如登录时, 验证码的输入框在用户名和密码中间, 而验证码有单独的请求.
-当然, 我们可以更换实现方式, 但是对于这类场景, DenForm 默认处理了表单嵌套.
-
-由于 Form 内部有一个 form 标签, 外层 onSubmit 会捕获所有子组件的 onSubmit 事件, 但是 data 数据只会捕获 当前层级内的 field 对象
-
-```js
-export default () => {
-  return (
-    <div>
-      {/* 此 Form 只会捕获 userName及password, code被子Form拦截了 */}
-      <Form onSubmit={({ data }) => console.log("1", data)}>
-        <input field="userName" />
-        {/* 此 Form 只会捕获 age */}
-        <Form onSubmit={({ data }) => console.log("2", data)}>
-          <input field="code" />
-          <button type="submit">此Submit会被最近的父级捕获</button>
-        </Form>
-        <input field="password" />
-      </Form>
-    </div>
-  );
-};
-```
-
-## 自定义 Field 组件
+## :art: 自定义 Field 组件
 
 如果我们自己定义的特殊组件, 需要满足两个条件:
 
@@ -202,7 +178,7 @@ export default () => {
 };
 ```
 
-## 使用 onChangeGetter 获取自定义组件的值
+## :art: 使用 onChangeGetter 获取自定义组件的值
 
 以下标签, From 会自动识别 onChange 的返回值, 进行解析获取
 
@@ -261,7 +237,7 @@ export default () => {
 
 > `onChangeGetter` 的默认值相当于 `onChangeGetter={e => e}`
 
-## 表单提交
+## :rocket: 表单提交
 
 以下三个情形为都会触发 Form 的 onSubmit 函数:
 
@@ -286,7 +262,7 @@ export default () => {
 };
 ```
 
-## fetch 提交
+## :rocket: 异步请求提交
 
 Form 表单内部并无封装请求行为, 请在 onSubmit 事件中自行处理, 如:
 
@@ -316,7 +292,7 @@ export default () => {
 };
 ```
 
-## 上下文获取数据
+## :bookmark:上下文获取数据
 
 我们为 Form 显式注入一个 data, 当数据变化时, data 的值也会变化, 这样可以在上下文获取 Form 的数据
 
@@ -366,7 +342,7 @@ export default () => {
 { userName: "dog" }
 ```
 
-## 表单校验
+## :lipstick: 表单校验
 
 表单校验是无痛的, 并且是高效的
 
@@ -409,7 +385,7 @@ export default () => {
 Warning: React does not recognize the `errorCheck` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `errorcheck` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
 ```
 
-## 表单校验时进行特殊处理
+## :ambulance: 表单校验时进行特殊处理
 
 如果我们有一个需求, 当表单校验错误时, 显示一个提示信息, 当表单校验通过时, 取消提示信息, 我们就需要对每次校验有差异时, 进行处理
 
@@ -437,9 +413,11 @@ export default () => {
 };
 ```
 
-## 联动
+## :zap:联动
 
 当我们修改一个对象时, 根据某些条件, 希望修改另一个对象的行为我们称之为联动
+
+:zap: DenForm 的联动是高性能的, 仅更新需要更新的对象
 
 我们可以在任何 Form 的回调函数中使用 update 进行更新某个被 field 捆绑的组件的 value 或者 props
 
@@ -563,3 +541,4 @@ Form 组件回调函数的参数如下: ({isError, event, data, field, value, el
 | errorprops | 当前对象 value 错误时, 合并 errorprops 至 props                  | Object                    | undefined | --   |
 
 
+以上就是全部, 希望 Den Form 能够帮到你解决 React 表单相关的痛点 :)
