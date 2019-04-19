@@ -95,17 +95,23 @@ export default () => {
 {userName: "333", password: "555"}
 ```
 
-## 子函数组件也不需额外处理
+## 跨组件的值获取
+
+1. 可以为组件标记一个 toform 属性
+2. 然后使用 toform 属性在组件内部对表单进行概括
 
 ```js
 import React from "react";
 import Form from "react-den-form";
 
-function SubInput() {
+// 组件会被注入 ToForm 组件
+function SubInput({ ToForm }) {
   return (
     <div>
       <div>
+      <ToForm>
         <input field="subPassword" />
+      </ToForm>
       </div>
     </div>
   );
@@ -121,7 +127,7 @@ export default () => {
               <input field="userName" />
             </div>
             <input field="password" />
-            <SubInput />
+            <SubInput toform />
           </div>
         </div>
       </Form>
@@ -136,7 +142,10 @@ export default () => {
 {userName: "333", password: "555", subPassword: "666"}
 ```
 
-## Form 组件嵌套不需要处理
+## Form 表单嵌套不需要处理
+
+有时候, 我们会有一些页面结构让两个不同的表单进行嵌套, 如登录时, 验证码的输入框在用户名和密码中间, 而验证码有单独的请求.
+当然, 我们可以更换实现方式, 但是对于这类场景, DenForm 默认处理了表单嵌套.
 
 由于 Form 内部有一个 form 标签, 外层 onSubmit 会捕获所有子组件的 onSubmit 事件, 但是 data 数据只会捕获 当前层级内的 field 对象
 
@@ -144,22 +153,22 @@ export default () => {
 export default () => {
   return (
     <div>
-      {/* 此 Form 只会捕获 userName及password, age及vipLevel被子Form拦截了 */}
+      {/* 此 Form 只会捕获 userName及password, code被子Form拦截了 */}
       <Form onSubmit={({ data }) => console.log("1", data)}>
         <input field="userName" />
-        <input field="password" />
-        {/* 此 Form 只会捕获 age及vipLevel */}
+        {/* 此 Form 只会捕获 age */}
         <Form onSubmit={({ data }) => console.log("2", data)}>
-          <input field="age" />
+          <input field="code" />
           <button type="submit">此Submit会被最近的父级捕获</button>
         </Form>
+        <input field="password" />
       </Form>
     </div>
   );
 };
 ```
 
-## 自定义 Input 组件
+## 自定义 Field 组件
 
 如果我们自己定义的特殊组件, 需要满足两个条件:
 
@@ -187,43 +196,6 @@ export default () => {
       <Form onChange={({ data }) => console.log(data)}>
         {/* 需要设置 field 属性 */}
         <SubInput field="userName" />
-      </Form>
-    </div>
-  );
-};
-```
-
-## 类组件的嵌套需要使用 toForm 进行处理
-
-被 Form 组件包裹过的类组件的 props 都会有一个 toForm 的函数
-
-类组件不同于函数组件, 需要使用 toForm 对其内部的 render 返回值进行处理, 才可以识别其内部有 field 属性的对象, 将其划分在 Form 组件的监管范围内:
-
-```js
-import React from "react";
-import Form from "react-den-form";
-
-// 例子, 这是一个有表单的页面, 使用类组件进行编写
-class HomePage extends React.Component {
-  render() {
-    // 需要使用 toForm 处理返回值
-    return this.props.toForm(
-      <div>
-        <nav>导航栏</nav>
-        <div>
-          <div>输入区域</div>
-          <input field="userName" />
-        </div>
-      </div>
-    );
-  }
-}
-
-export default () => {
-  return (
-    <div>
-      <Form onChange={({ data }) => console.log(data)}>
-        <HomePage />
       </Form>
     </div>
   );

@@ -195,61 +195,47 @@ class Form extends React.Component {
     }
   };
 
-  getChild = children => {
+  getChild = ({ children }) => {
     return React.Children.map(children, child => {
-      if (typeof child.type === 'function' && !child.type.isForm) {
-        if (child.type.prototype.render) {
-          return React.cloneElement(child, { toForm: this.getChild, ...this.fixUpdateProps(child) });
-        }
-        return this.getChild(child.type(child.props));
-      }
-      if (child.props && (child.props.type === 'submit' || child.props.submit)) {
-        // 如果包含submit并且也包含field属性
-        if (child.props.field) {
-          if (!this.refList[child.props.field]) {
-            this.refList[child.props.field] = [];
-          }
-
-          const ref = React.createRef();
-
-          this.refList[child.props.field].push(ref);
-
-          const props = {
-            ref,
-            fixUpdateProps: this.fixUpdateProps,
-            [immitProps.value]: this.data[child.props.field] || child.props[immitProps.value],
-            [immitProps.change]: e => this.handleOnChange(e, child, child.props.onChange),
-            [immitProps.click]: e => this.handleOnClick(e, child, child.props.onClick),
-          };
-
-          return <FormItem {...props}>{child}</FormItem>;
-        }
-        return React.cloneElement(child, {
-          [immitProps.value]: this.data[child.props.field] || child.props[immitProps.value],
-          [immitProps.click]: e => this.handleOnClick(e, child, child.props.onClick),
-          ...this.fixUpdateProps(child),
-        });
-      }
-      if (child.props && child.props.field) {
+      if (child.props.field || child.props.toform || child.props.submit || child.props.type === 'submit') {
         if (!this.refList[child.props.field]) {
           this.refList[child.props.field] = [];
         }
 
+        // 每次Form, 或者 ToForm重绘, 就重新获取ref
         const ref = React.createRef();
 
         this.refList[child.props.field].push(ref);
 
-        const props = {
-          ref,
-          fixUpdateProps: this.fixUpdateProps,
-          [immitProps.value]: this.data[child.props.field] || child.props[immitProps.value],
-          [immitProps.change]: e => this.handleOnChange(e, child, child.props.onChange),
-        };
+        let fieldProps;
+        let toformProps;
+        let submitProps;
 
-        return <FormItem {...props}>{child}</FormItem>;
-      }
-      if (child.props && child.props.children) {
-        return React.cloneElement(child, {}, [this.getChild(child.props.children)]);
+        if (child.props.field) {
+          fieldProps = {
+            [immitProps.value]: this.data[child.props.field] || child.props[immitProps.value],
+            [immitProps.change]: e => this.handleOnChange(e, child, child.props.onChange),
+          };
+        }
+
+        if (child.props.toform) {
+          toformProps = {
+            ToForm: this.getChild,
+          };
+        }
+
+        if (child.props.submit || child.props.type === 'submit') {
+          submitProps = {
+            [immitProps.click]: e => this.handleOnClick(e, child, child.props.onClick),
+            [immitProps.touch]: e => this.handleOnClick(e, child, child.props.onClick),
+          };
+        }
+
+        return (
+          <FormItem ref={ref} fixUpdateProps={this.fixUpdateProps} {...fieldProps} {...submitProps} {...toformProps}>
+            {child}
+          </FormItem>
+        );
       }
 
       return child;
@@ -261,7 +247,7 @@ class Form extends React.Component {
 
     const { children } = this.props;
 
-    return this.getChild(children);
+    return this.getChild({ children });
   }
 }
 

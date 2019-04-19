@@ -2,6 +2,7 @@ export const immitProps = {
   value: 'value',
   change: 'onChange',
   click: 'onClick',
+  touch: 'onTouchEnd',
 };
 
 export const getValuePaths = {
