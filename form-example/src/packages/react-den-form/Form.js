@@ -121,7 +121,8 @@ class Form extends React.Component {
   };
 
   handleOnChange = (e, child, childOnChange) => {
-    const { onChange, onErrorCheck, onSubmit } = this.props;
+    const { onChange, onErrorCheck } = this.props;
+
     let value = void 0;
 
     this.editChild = child;
@@ -176,26 +177,26 @@ class Form extends React.Component {
       }
     }
 
+    this.callbackParams = callbackParams;
     this.updateByData();
 
     // 如果有e有keyCode, 监听回车事件
     if (e && e.target && !e.target.keydownListen && e.target.addEventListener) {
-      const keydownListen = event => {
-        if (event && event.keyCode === 13 && typeof onSubmit === 'function') {
-          onSubmit(callbackParams);
-        }
-      };
+      e.target.addEventListener('keydown', this.keydownListen);
+      e.target.keydownListen = this.keydownListen;
+    }
+  };
 
-      e.target.addEventListener('keydown', keydownListen);
-      e.target.keydownListen = keydownListen;
+  keydownListen = event => {
+    const { onSubmit } = this.props;
+
+    if (event && event.keyCode === 13 && typeof onSubmit === 'function') {
+      onSubmit(this.callbackParams);
     }
   };
 
   getChild = children => {
     return React.Children.map(children, child => {
-      if (!child) {
-        return null;
-      }
       if (typeof child.type === 'function' && !child.type.isForm) {
         if (child.type.prototype.render) {
           return React.cloneElement(child, { toForm: this.getChild, ...this.fixUpdateProps(child) });

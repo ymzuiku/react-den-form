@@ -3,6 +3,7 @@ module.exports = {
   dontLib: [], // dont babel files or dirs
   copy: {
     'src/packages/react-den-form': '../src',
+    'src/packages/react-den-form/README.md': '../src/README.md',
     dist: '../lib',
     'dist/package.json': '../package.json',
   },

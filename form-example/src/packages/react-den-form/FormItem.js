@@ -12,9 +12,16 @@ export default class extends React.PureComponent {
   render() {
     const { children, fixUpdateProps, ...rest } = this.props;
 
+    const nextProps = fixUpdateProps(children, this.tempProps);
+
+    // 受控组件必须有默认值
+    if (nextProps.value === void 0) {
+      nextProps.value = '';
+    }
+
     const node = React.cloneElement(children, {
       ...rest,
-      ...fixUpdateProps(children, this.tempProps),
+      ...nextProps,
     });
 
     this.tempProps = void 0;
